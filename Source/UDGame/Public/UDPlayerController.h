@@ -12,6 +12,12 @@ class AUDPlayerController : public APlayerController
 public:
 	AUDPlayerController();
 
+	UFUNCTION()
+	void SelectCharacter();
+
+	UFUNCTION()
+	void MoveCharacter();
+
 protected:
 	/** True if the controlled character should navigate to the mouse cursor. */
 	uint32 bMoveToMouseCursor : 1;
@@ -33,6 +39,13 @@ protected:
 	/** Input handlers for SetDestination action. */
 	void OnSetDestinationPressed();
 	void OnSetDestinationReleased();
+
+private:
+
+	AActor* HoveredCharacter;
+	AActor* SelectedCharacter;
+
+
 };
 
 

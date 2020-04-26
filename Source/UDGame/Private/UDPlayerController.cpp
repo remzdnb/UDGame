@@ -24,16 +24,39 @@ void AUDPlayerController::PlayerTick(float DeltaTime)
 
 void AUDPlayerController::SetupInputComponent()
 {
-	// set up gameplay key bindings
 	Super::SetupInputComponent();
 
-	InputComponent->BindAction("SetDestination", IE_Pressed, this, &AUDPlayerController::OnSetDestinationPressed);
-	InputComponent->BindAction("SetDestination", IE_Released, this, &AUDPlayerController::OnSetDestinationReleased);
-
-	// support touch devices 
-	InputComponent->BindTouch(EInputEvent::IE_Pressed, this, &AUDPlayerController::MoveToTouchLocation);
-	InputComponent->BindTouch(EInputEvent::IE_Repeat, this, &AUDPlayerController::MoveToTouchLocation);
+	InputComponent->BindAction("Select", IE_Pressed, this, &AUDPlayerController::SelectCharacter);
+	InputComponent->BindAction("MoveTo", IE_Pressed, this, &AUDPlayerController::MoveCharacter);
 }
+
+void AUDPlayerController::SelectCharacter()
+{
+	FHitResult Hit;
+	GetHitResultUnderCursor(ECC_Visibility, false, Hit);
+
+	if (Cast<AUDCharacter>(Hit.Actor))
+	{
+		// We hit something, move there
+		SetNewMoveDestination(Hit.ImpactPoint);
+		SelectedCharacter = Cast<AUDCharacter>(Hit.Actor);
+		Possess(Cast<AUDCharacter>(Hit.Actor));
+	}
+}
+
+void AUDPlayerController::MoveCharacter()
+{
+	if (GetPawn())
+	{
+		FHitResult Hit;
+		GetHitResultUnderCursor(ECC_Visibility, false, Hit);
+
+		UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, Hit.Location);
+	}
+}
+
+
+/////
 
 void AUDPlayerController::MoveToMouseCursor()
 {
@@ -88,3 +111,4 @@ void AUDPlayerController::OnSetDestinationReleased()
 	// clear flag to indicate we should stop updating the destination
 	bMoveToMouseCursor = false;
 }
+
