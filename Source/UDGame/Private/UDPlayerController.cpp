@@ -4,6 +4,8 @@
 #include "HeadMountedDisplayFunctionLibrary.h"
 #include "UDCharacter.h"
 #include "Engine/World.h"
+#include "Engine/Engine.h"
+#include "BaseAIController.h"
 
 AUDPlayerController::AUDPlayerController()
 {
@@ -15,43 +17,47 @@ void AUDPlayerController::PlayerTick(float DeltaTime)
 {
 	Super::PlayerTick(DeltaTime);
 
-	// keep updating the destination every tick while desired
-	if (bMoveToMouseCursor)
+	FHitResult Hit;
+	GetHitResultUnderCursor(ECC_Visibility, false, Hit);
+
+	HoveredCharacter = Cast<AUDCharacter>(Hit.Actor);
+	if (HoveredCharacter)
 	{
-		MoveToMouseCursor();
+		//GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Yellow, "yes");
 	}
+	//else
+		//GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Yellow, "no");
+
 }
 
 void AUDPlayerController::SetupInputComponent()
 {
 	Super::SetupInputComponent();
 
-	InputComponent->BindAction("Select", IE_Pressed, this, &AUDPlayerController::SelectCharacter);
-	InputComponent->BindAction("MoveTo", IE_Pressed, this, &AUDPlayerController::MoveCharacter);
+	//InputComponent->BindAction("Select", IE_Pressed, this, &AUDPlayerController::SelectCharacter);
+	//InputComponent->BindAction("MoveTo", IE_Pressed, this, &AUDPlayerController::MoveCharacter);
 }
 
 void AUDPlayerController::SelectCharacter()
 {
-	FHitResult Hit;
-	GetHitResultUnderCursor(ECC_Visibility, false, Hit);
-
-	if (Cast<AUDCharacter>(Hit.Actor))
+	if (HoveredCharacter)
 	{
-		// We hit something, move there
-		SetNewMoveDestination(Hit.ImpactPoint);
-		SelectedCharacter = Cast<AUDCharacter>(Hit.Actor);
-		Possess(Cast<AUDCharacter>(Hit.Actor));
+		SelectedCharacter = HoveredCharacter;
+		GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Yellow, "yes");
 	}
+
 }
 
 void AUDPlayerController::MoveCharacter()
 {
-	if (GetPawn())
+	if (SelectedCharacter)
 	{
+		GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Yellow, "yes");
 		FHitResult Hit;
 		GetHitResultUnderCursor(ECC_Visibility, false, Hit);
 
-		UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, Hit.Location);
+		Cast<ABaseAIController>(SelectedCharacter->GetController())->MoveToLocation(Hit.Location);
+		//UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, Hit.Location);
 	}
 }
 

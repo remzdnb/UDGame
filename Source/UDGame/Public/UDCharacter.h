@@ -1,5 +1,3 @@
-// Copyright 1998-2019 Epic Games, Inc. All Rights Reserved.
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -12,12 +10,17 @@ class AUDCharacter : public ACharacter
 	GENERATED_BODY()
 
 public:
+
 	AUDCharacter();
 
-	// Called every frame.
+	//void Init(FName TableRowName, uint8 NewTeamID, bool bNewIsPlayerControlled);
+
+	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
 
 private:
+
+	class ABaseAIController* AIController;
 
 };
 

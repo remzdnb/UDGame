@@ -10,12 +10,13 @@ class AUDPlayerController : public APlayerController
 	GENERATED_BODY()
 
 public:
+
 	AUDPlayerController();
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	void SelectCharacter();
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	void MoveCharacter();
 
 protected:
@@ -42,9 +43,9 @@ protected:
 
 private:
 
-	AActor* HoveredCharacter;
-	AActor* SelectedCharacter;
+	class AUDCharacter* HoveredCharacter;
 
+	class AUDCharacter* SelectedCharacter;
 
 };
 
