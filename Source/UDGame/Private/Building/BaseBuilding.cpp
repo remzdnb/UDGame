@@ -1,6 +1,6 @@
-#include "BaseBuilding.h"
+#include "Building/BaseBuilding.h"
 
-ABaseBuilding::ABaseBuilding()
+ABaseBuilding::ABaseBuilding() : TeamID(0)
 {
 	RootScene = CreateDefaultSubobject<USceneComponent>(FName("RootScene"));
 	RootComponent = RootScene;

@@ -1,11 +1,11 @@
-#include "BasePlayerController.h"
+#include "Game/BasePlayerController.h"
 #include "Blueprint/AIBlueprintHelperLibrary.h"
 #include "Runtime/Engine/Classes/Components/DecalComponent.h"
 #include "HeadMountedDisplayFunctionLibrary.h"
-#include "BaseCharacter.h"
+#include "Character/BaseCharacter.h"
 #include "Engine/World.h"
 #include "Engine/Engine.h"
-#include "BaseAIController.h"
+#include "Character/BaseAIController.h"
 
 ABasePlayerController::ABasePlayerController()
 {

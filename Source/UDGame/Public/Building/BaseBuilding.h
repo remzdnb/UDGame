@@ -13,13 +13,11 @@ public:
 
 	ABaseBuilding();
 
-protected:
-
 	virtual void BeginPlay() override;
-
-public:	
-
 	virtual void Tick(float DeltaTime) override;
+
+	UPROPERTY()
+	uint8 TeamID;
 
 private:
 

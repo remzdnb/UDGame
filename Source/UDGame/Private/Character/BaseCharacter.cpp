@@ -1,10 +1,10 @@
-#include "BaseCharacter.h"
+#include "Character/BaseCharacter.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/PlayerController.h"
 #include "Engine/World.h"
-#include "BaseAIController.h"
+#include "Character/BaseAIController.h"
 
 ABaseCharacter::ABaseCharacter()
 {
@@ -20,6 +20,11 @@ ABaseCharacter::ABaseCharacter()
 	// Activate ticking in order to update the cursor every frame.
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = true;
+}
+
+void ABaseCharacter::Init(FName TableRowName, uint8 NewTeamID)
+{
+	TeamID = NewTeamID;
 }
 
 void ABaseCharacter::BeginPlay()

@@ -13,10 +13,13 @@ public:
 
 	ABaseCharacter();
 
-	//void Init(FName TableRowName, uint8 NewTeamID, bool bNewIsPlayerControlled);
+	void Init(FName TableRowName, uint8 NewTeamID);
 
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
+
+	UPROPERTY()
+	uint8 TeamID;
 
 private:
 
