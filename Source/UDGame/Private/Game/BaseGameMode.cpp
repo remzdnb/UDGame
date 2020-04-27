@@ -25,16 +25,12 @@ void ABaseGameMode::SpawnCharacter(uint8 TeamID)
 	if (GetWorld())
 		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, "getworld ok");
 	ABaseCharacter* TestCharacter = GetWorld()->SpawnActor<ABaseCharacter>(BaseCharacterBP, FVector(0.0f), FRotator(0.0f), SpawnParameters);
-	if (TestCharacter)
-		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, "testchar ok");
-	else
-		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, "testchar not ok");
 
 	for (TActorIterator<ACharacterStartBuilding> CharacterStart(GetWorld()); CharacterStart; ++CharacterStart)
 	{
 		if (CharacterStart->TeamID == TeamID)
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, "team id ok");
+			//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Yellow, "team id ok");
 
 			const FTransform SpawnTransform2(CharacterStart->GetActorRotation(), CharacterStart->GetActorLocation(), FVector(1.0f));
 

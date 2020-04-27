@@ -1,4 +1,5 @@
 #include "Building/BaseBuilding.h"
+#include "Components/StaticMeshComponent.h"
 
 ABaseBuilding::ABaseBuilding() : TeamID(0)
 {

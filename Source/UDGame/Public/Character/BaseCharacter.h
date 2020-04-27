@@ -19,11 +19,18 @@ public:
 	virtual void Tick(float DeltaSeconds) override;
 
 	UPROPERTY()
+	FString CharacterName;
+
+	UPROPERTY()
 	uint8 TeamID;
+
+	//UPROPERTY()
 
 private:
 
 	class ABaseAIController* AIController;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, category = "Components", meta = (AllowPrivateAccess = "true"))
+	class UWidgetComponent* GroundWidgetComponent;
 };
 

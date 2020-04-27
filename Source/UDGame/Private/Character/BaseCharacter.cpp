@@ -1,6 +1,7 @@
 #include "Character/BaseCharacter.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/WidgetComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/PlayerController.h"
 #include "Engine/World.h"
@@ -8,10 +9,13 @@
 
 ABaseCharacter::ABaseCharacter()
 {
-	// Set size for player capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
 
-	// Configure character movement
+	GroundWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(FName("GroundWidget"));
+	GroundWidgetComponent->SetWidgetSpace(EWidgetSpace::World);
+	GroundWidgetComponent->SetupAttachment(RootComponent);
+
+	//
 	GetCharacterMovement()->bOrientRotationToMovement = true; // Rotate character to moving direction
 	GetCharacterMovement()->RotationRate = FRotator(0.f, 640.f, 0.f);
 	//GetCharacterMovement()->bConstrainToPlane = true;
