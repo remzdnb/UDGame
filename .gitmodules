@@ -1,3 +1,6 @@
 [submodule "Plugins/RZAnimInstancePlugin"]
 	path = Plugins/RZAnimInstancePlugin
 	url = https://github.com/remzdnb/RZAnimInstancePlugin.git
+[submodule "Plugins/RZCameraManagerPlugin"]
+	path = Plugins/RZCameraManagerPlugin
+	url = https://github.com/remzdnb/RZCameraManagerPlugin.git

@@ -2,16 +2,16 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
-#include "UDPlayerController.generated.h"
+#include "BasePlayerController.generated.h"
 
 UCLASS()
-class AUDPlayerController : public APlayerController
+class ABasePlayerController : public APlayerController
 {
 	GENERATED_BODY()
 
 public:
 
-	AUDPlayerController();
+	ABasePlayerController();
 
 	UFUNCTION(BlueprintCallable)
 	void SelectCharacter();
@@ -43,9 +43,9 @@ protected:
 
 private:
 
-	class AUDCharacter* HoveredCharacter;
+	class ABaseCharacter* HoveredCharacter;
 
-	class AUDCharacter* SelectedCharacter;
+	class ABaseCharacter* SelectedCharacter;
 
 };
 

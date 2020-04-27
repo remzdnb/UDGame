@@ -2,16 +2,16 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-#include "UDCharacter.generated.h"
+#include "BaseCharacter.generated.h"
 
 UCLASS(Blueprintable)
-class AUDCharacter : public ACharacter
+class ABaseCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
 public:
 
-	AUDCharacter();
+	ABaseCharacter();
 
 	//void Init(FName TableRowName, uint8 NewTeamID, bool bNewIsPlayerControlled);
 

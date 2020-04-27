@@ -1,26 +1,26 @@
-#include "UDPlayerController.h"
+#include "BasePlayerController.h"
 #include "Blueprint/AIBlueprintHelperLibrary.h"
 #include "Runtime/Engine/Classes/Components/DecalComponent.h"
 #include "HeadMountedDisplayFunctionLibrary.h"
-#include "UDCharacter.h"
+#include "BaseCharacter.h"
 #include "Engine/World.h"
 #include "Engine/Engine.h"
 #include "BaseAIController.h"
 
-AUDPlayerController::AUDPlayerController()
+ABasePlayerController::ABasePlayerController()
 {
 	bShowMouseCursor = true;
 	DefaultMouseCursor = EMouseCursor::Crosshairs;
 }
 
-void AUDPlayerController::PlayerTick(float DeltaTime)
+void ABasePlayerController::PlayerTick(float DeltaTime)
 {
 	Super::PlayerTick(DeltaTime);
 
 	FHitResult Hit;
 	GetHitResultUnderCursor(ECC_Visibility, false, Hit);
 
-	HoveredCharacter = Cast<AUDCharacter>(Hit.Actor);
+	HoveredCharacter = Cast<ABaseCharacter>(Hit.Actor);
 	if (HoveredCharacter)
 	{
 		//GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Yellow, "yes");
@@ -30,15 +30,15 @@ void AUDPlayerController::PlayerTick(float DeltaTime)
 
 }
 
-void AUDPlayerController::SetupInputComponent()
+void ABasePlayerController::SetupInputComponent()
 {
 	Super::SetupInputComponent();
 
-	//InputComponent->BindAction("Select", IE_Pressed, this, &AUDPlayerController::SelectCharacter);
-	//InputComponent->BindAction("MoveTo", IE_Pressed, this, &AUDPlayerController::MoveCharacter);
+	//InputComponent->BindAction("Select", IE_Pressed, this, &ABasePlayerController::SelectCharacter);
+	//InputComponent->BindAction("MoveTo", IE_Pressed, this, &ABasePlayerController::MoveCharacter);
 }
 
-void AUDPlayerController::SelectCharacter()
+void ABasePlayerController::SelectCharacter()
 {
 	if (HoveredCharacter)
 	{
@@ -48,7 +48,7 @@ void AUDPlayerController::SelectCharacter()
 
 }
 
-void AUDPlayerController::MoveCharacter()
+void ABasePlayerController::MoveCharacter()
 {
 	if (SelectedCharacter)
 	{
@@ -64,7 +64,7 @@ void AUDPlayerController::MoveCharacter()
 
 /////
 
-void AUDPlayerController::MoveToMouseCursor()
+void ABasePlayerController::MoveToMouseCursor()
 {
 			// Trace to see what is under the mouse cursor
 			FHitResult Hit;
@@ -77,7 +77,7 @@ void AUDPlayerController::MoveToMouseCursor()
 			}
 }
 
-void AUDPlayerController::MoveToTouchLocation(const ETouchIndex::Type FingerIndex, const FVector Location)
+void ABasePlayerController::MoveToTouchLocation(const ETouchIndex::Type FingerIndex, const FVector Location)
 {
 	FVector2D ScreenSpaceLocation(Location);
 
@@ -91,7 +91,7 @@ void AUDPlayerController::MoveToTouchLocation(const ETouchIndex::Type FingerInde
 	}
 }
 
-void AUDPlayerController::SetNewMoveDestination(const FVector DestLocation)
+void ABasePlayerController::SetNewMoveDestination(const FVector DestLocation)
 {
 	APawn* const MyPawn = GetPawn();
 	if (MyPawn)
@@ -106,13 +106,13 @@ void AUDPlayerController::SetNewMoveDestination(const FVector DestLocation)
 	}
 }
 
-void AUDPlayerController::OnSetDestinationPressed()
+void ABasePlayerController::OnSetDestinationPressed()
 {
 	// set flag to keep updating destination until released
 	bMoveToMouseCursor = true;
 }
 
-void AUDPlayerController::OnSetDestinationReleased()
+void ABasePlayerController::OnSetDestinationReleased()
 {
 	// clear flag to indicate we should stop updating the destination
 	bMoveToMouseCursor = false;

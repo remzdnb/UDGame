@@ -1,4 +1,4 @@
-#include "UDCharacter.h"
+#include "BaseCharacter.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -6,7 +6,7 @@
 #include "Engine/World.h"
 #include "BaseAIController.h"
 
-AUDCharacter::AUDCharacter()
+ABaseCharacter::ABaseCharacter()
 {
 	// Set size for player capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
@@ -22,7 +22,7 @@ AUDCharacter::AUDCharacter()
 	PrimaryActorTick.bStartWithTickEnabled = true;
 }
 
-void AUDCharacter::BeginPlay()
+void ABaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
@@ -36,7 +36,7 @@ void AUDCharacter::BeginPlay()
 	}*/
 }
 
-void AUDCharacter::Tick(float DeltaSeconds)
+void ABaseCharacter::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
 
