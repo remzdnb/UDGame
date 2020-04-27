@@ -1,6 +1,3 @@
-[submodule "Plugins/RDBCamManagerPlugin"]
-	path = Plugins/RDBCamManagerPlugin
-	url = https://github.com/remzdnb/RDBCamManagerPlugin.git
 [submodule "Plugins/RZAnimInstancePlugin"]
 	path = Plugins/RZAnimInstancePlugin
 	url = https://github.com/remzdnb/RZAnimInstancePlugin.git
