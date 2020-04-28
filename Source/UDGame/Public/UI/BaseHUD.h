@@ -19,14 +19,17 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Widgets")
 	TSubclassOf<UUserWidget> SelectedCharacterWidgetBP;
 
+	UFUNCTION()
+	void UpdateSelectedCharacterWidget(class ABaseCharacter* SelectedCharacter);
+
 protected:
 
 	virtual void Tick(float DeltaSeconds) override;
 
-
 private:
 
-	//ABasePlayerController* OwnerPC;
+	class UBaseGameInstance* GInstance;
+	class ABasePlayerController* OwnerPC;
 
 	UPROPERTY()
 	class USelectedCharacterWidget* SelectedCharacterWidget;

@@ -43,9 +43,17 @@ void ABasePlayerController::SelectCharacter()
 	if (HoveredCharacter)
 	{
 		SelectedCharacter = HoveredCharacter;
-		GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Yellow, "yes");
-	}
+		OnCharacterSelectionUpdated.Broadcast(SelectedCharacter);
 
+		GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Yellow, "Char Selected");
+	}
+	else
+	{
+		SelectedCharacter = nullptr;
+		OnCharacterSelectionUpdated.Broadcast(SelectedCharacter);
+
+		GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Yellow, "Char Deselected");
+	}
 }
 
 void ABasePlayerController::MoveCharacter()
@@ -60,61 +68,3 @@ void ABasePlayerController::MoveCharacter()
 		//UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, Hit.Location);
 	}
 }
-
-
-/////
-
-void ABasePlayerController::MoveToMouseCursor()
-{
-			// Trace to see what is under the mouse cursor
-			FHitResult Hit;
-			GetHitResultUnderCursor(ECC_Visibility, false, Hit);
-
-			if (Hit.bBlockingHit)
-			{
-				// We hit something, move there
-				SetNewMoveDestination(Hit.ImpactPoint);
-			}
-}
-
-void ABasePlayerController::MoveToTouchLocation(const ETouchIndex::Type FingerIndex, const FVector Location)
-{
-	FVector2D ScreenSpaceLocation(Location);
-
-	// Trace to see what is under the touch location
-	FHitResult HitResult;
-	GetHitResultAtScreenPosition(ScreenSpaceLocation, CurrentClickTraceChannel, true, HitResult);
-	if (HitResult.bBlockingHit)
-	{
-		// We hit something, move there
-		SetNewMoveDestination(HitResult.ImpactPoint);
-	}
-}
-
-void ABasePlayerController::SetNewMoveDestination(const FVector DestLocation)
-{
-	APawn* const MyPawn = GetPawn();
-	if (MyPawn)
-	{
-		float const Distance = FVector::Dist(DestLocation, MyPawn->GetActorLocation());
-
-		// We need to issue move command only if far enough in order for walk animation to play correctly
-		if ((Distance > 120.0f))
-		{
-			UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, DestLocation);
-		}
-	}
-}
-
-void ABasePlayerController::OnSetDestinationPressed()
-{
-	// set flag to keep updating destination until released
-	bMoveToMouseCursor = true;
-}
-
-void ABasePlayerController::OnSetDestinationReleased()
-{
-	// clear flag to indicate we should stop updating the destination
-	bMoveToMouseCursor = false;
-}
-

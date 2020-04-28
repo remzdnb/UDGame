@@ -1,9 +1,9 @@
 #pragma once
 
-#include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
-#include "Engine/DataTable.h"
 #include "Character/BaseCharacter.h"
+#include "Weapon/BaseWeapon.h"
+#include "Engine/DataTable.h"
+#include "GameFramework/Actor.h"
 #include "UDGameTypes.generated.h"
 
 USTRUCT(BlueprintType)
@@ -16,5 +16,29 @@ struct FGlobalData : public FTableRowBase
 
 	FGlobalData()
 	{
+	}
+};
+
+USTRUCT(BlueprintType)
+struct FWeaponData : public FTableRowBase
+{
+	GENERATED_USTRUCT_BODY()
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "BaseItem")
+	TSubclassOf<ABaseWeapon> WeaponBP;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "BaseItem")
+	FString DisplayName;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "BaseItem")
+	FName SocketName;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "RangedWeapon")
+	float FireRate;
+
+	FWeaponData()
+	{
+		DisplayName = "None";
+		SocketName = "HandSocket";
 	}
 };

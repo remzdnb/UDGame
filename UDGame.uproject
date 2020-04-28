@@ -13,6 +13,16 @@
 				"AIModule",
 				"UMG"
 			]
+		},
+		{
+			"Name": "ItemModule",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"Engine",
+				"AIModule",
+				"UMG"
+			]
 		}
 	]
 }

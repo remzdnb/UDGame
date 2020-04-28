@@ -1,10 +1,32 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
-#include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Engine/DataTable.h"
 #include "BaseItem.generated.h"
+
+USTRUCT(BlueprintType)
+struct FItemData : public FTableRowBase
+{
+	GENERATED_USTRUCT_BODY()
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "BaseItem")
+	TSubclassOf<ABaseItem> WeaponBP;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "BaseItem")
+	FString DisplayName;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "BaseItem")
+	FName SocketName;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "RangedWeapon")
+	float FireRate;
+
+	FItemData()
+	{
+		DisplayName = "None";
+		SocketName = "HandSocket";
+	}
+};
 
 UCLASS()
 class ITEMMODULE_API ABaseItem : public AActor
@@ -12,15 +34,27 @@ class ITEMMODULE_API ABaseItem : public AActor
 	GENERATED_BODY()
 	
 public:	
-	// Sets default values for this actor's properties
+
 	ABaseItem();
 
-protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
-public:	
-	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	USceneComponent* RootScene;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	UStaticMeshComponent* BaseStaticMesh;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	USkeletalMeshComponent* BaseSkeletalMesh;
+
+	UPROPERTY()
+	FString ItemName;
+
+	UPROPERTY(EditAnywhere)
+	TSoftObjectPtr<UDataTable> ItemDataTable;
+
+	void AttachToCharacterHand(class ACharacter* TargetCharacter);
 
 };

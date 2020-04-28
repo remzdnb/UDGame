@@ -10,5 +10,6 @@ public class UDGameEditorTarget : TargetRules
 		Type = TargetType.Editor;
 		DefaultBuildSettings = BuildSettingsVersion.V2;
 		ExtraModuleNames.Add("UDGame");
+		ExtraModuleNames.Add("ItemModule");
 	}
 }

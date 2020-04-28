@@ -2,7 +2,6 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "Components/TextBlock.h"
 #include "Components/ProgressBar.h"
 #include "Components/ComboBox.h"
 #include "SelectedCharacterWidget.generated.h"
@@ -12,13 +11,32 @@ class UDGAME_API USelectedCharacterWidget : public UUserWidget
 {
 	GENERATED_BODY()
 	
+public:
+
+	virtual void NativeOnInitialized() override;
+
+	void Update(bool bShouldFadeIn);
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void FadeIn();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void FadeOut();
+
+protected:
+
+	virtual void NativeConstruct() override;
+	virtual void NativeTick(const FGeometry& MyGeometry, float DeltaTime) override;
+
 private:
 
-	UPROPERTY(meta = (BindWidget))
-	UTextBlock* NameText;
+	class UBaseGameInstance* GInstance;
 
 	UPROPERTY(meta = (BindWidget))
-	UTextBlock* LevelText;
+	class UTextBlock* NameText;
+
+	UPROPERTY(meta = (BindWidget))
+	class UTextBlock* LevelText;
 
 	UPROPERTY(meta = (BindWidget))
 	UProgressBar* HealthBar;
@@ -27,9 +45,8 @@ private:
 	UProgressBar* StaminaBar;
 
 	UPROPERTY(meta = (BindWidget))
-	UComboBox* RangedWeaponCBox;
+	class UComboBoxString* RangedWeaponCBox;
 
 	UPROPERTY(meta = (BindWidget))
-	UComboBox* MeleeWeaponCBox;
-
+	class UComboBoxString* MeleeWeaponCBox;
 };

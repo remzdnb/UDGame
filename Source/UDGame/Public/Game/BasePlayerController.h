@@ -4,6 +4,8 @@
 #include "GameFramework/PlayerController.h"
 #include "BasePlayerController.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FCharacterSelectionUpdate, ABaseCharacter*, SelectedCharacter);
+
 UCLASS()
 class ABasePlayerController : public APlayerController
 {
@@ -19,32 +21,17 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void MoveCharacter();
 
-protected:
-	/** True if the controlled character should navigate to the mouse cursor. */
-	uint32 bMoveToMouseCursor : 1;
+	UPROPERTY(BlueprintAssignable, Category = "Event Dispatchers")
+	FCharacterSelectionUpdate OnCharacterSelectionUpdated;
 
-	// Begin PlayerController interface
+protected:
+
 	virtual void PlayerTick(float DeltaTime) override;
 	virtual void SetupInputComponent() override;
-	// End PlayerController interface
-
-	/** Navigate player to the current mouse cursor location. */
-	void MoveToMouseCursor();
-
-	/** Navigate player to the current touch location. */
-	void MoveToTouchLocation(const ETouchIndex::Type FingerIndex, const FVector Location);
-	
-	/** Navigate player to the given world location. */
-	void SetNewMoveDestination(const FVector DestLocation);
-
-	/** Input handlers for SetDestination action. */
-	void OnSetDestinationPressed();
-	void OnSetDestinationReleased();
 
 private:
 
 	class ABaseCharacter* HoveredCharacter;
-
 	class ABaseCharacter* SelectedCharacter;
 
 };

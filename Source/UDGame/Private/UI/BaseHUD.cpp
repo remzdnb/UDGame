@@ -1,5 +1,10 @@
 #include "UI/BaseHUD.h"
 #include "UI/SelectedCharacterWidget.h"
+#include "Game/BaseGameInstance.h"
+#include "Game/BasePlayerController.h"
+#include "Kismet/GameplayStatics.h"
+
+#include "Engine/Engine.h"
 
 ABaseHUD::ABaseHUD()
 {
@@ -14,11 +19,42 @@ void ABaseHUD::BeginPlay()
 {
 	Super::BeginPlay();
 
+	OwnerPC = Cast<ABasePlayerController>(GetOwner());
+
 	SelectedCharacterWidget = CreateWidget<USelectedCharacterWidget>(GetWorld(), SelectedCharacterWidgetBP);
 	if (SelectedCharacterWidget)
 		SelectedCharacterWidget->AddToViewport();
 
-	//OwnerPC = Cast<ABasePlayerController>(GetOwner());
+	OwnerPC->OnCharacterSelectionUpdated.AddDynamic(this, &ABaseHUD::UpdateSelectedCharacterWidget);
+
+
+	/*void UGameControlsWidget::CreateWeaponSlots()
+{
+
+	for (FName RowName : RowNames)
+	{
+		const FString ContextString;
+		const FWeaponData* WeaponData = GInstance->GetWeaponDataTable()->FindRow<FWeaponData>(RowName, ContextString);
+		if (WeaponData)
+		{
+			UWeaponSlotWidget* WeaponSlot = CreateWidget<UWeaponSlotWidget>(GetWorld(), GInstance->GetGlobalData().WeaponSlotWidgetBP);
+			WeaponSlot->Init(RowName, *WeaponData);
+
+			if (WeaponData->Slot == EWeaponSlot::Ranged)
+			{
+				WeaponSlotList.Add(WeaponSlot);
+				RangedWeaponsVBox->AddChild(WeaponSlot);
+			}
+
+			if (WeaponData->Slot == EWeaponSlot::Melee)
+			{
+				WeaponSlotList.Add(WeaponSlot);
+				MeleeWeaponsVBox->AddChild(WeaponSlot);
+			}
+			//GEngine->AddOnScreenDebugMessage(-1, 30.f, FColor::Red, FString::Printf(TEXT("Weapon Name : %s"), *RowName.ToString()));
+		}
+	}
+}*/
 
 	/*CharacterStatsWidget = CreateWidget<UCharacterStatsWidget>(GetWorld(), GameInstance->GetGlobalData().CharacterStatsWidgetBP);
 	if (CharacterStatsWidget)
@@ -42,10 +78,21 @@ void ABaseHUD::BeginPlay()
 	//SetGameControlsVisibility(false, false);
 }
 
+void ABaseHUD::UpdateSelectedCharacterWidget(ABaseCharacter* SelectedCharacter)
+{
+	if (SelectedCharacter)
+		SelectedCharacterWidget->Update(true);
+	else
+		SelectedCharacterWidget->Update(false);
+
+	GEngine->AddOnScreenDebugMessage(-1, 0.5f, FColor::Yellow, "HUD");
+}
+
 void ABaseHUD::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 }
+
 /*
 void ABaseHUD::SetGameStatsVisibility(bool bShouldToggle, bool bShouldBeVisible)
 {

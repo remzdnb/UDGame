@@ -1,27 +1,42 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "BaseItem.h"
+#include "Engine/Engine.h" //GEngine
+#include "GameFramework/Character.h"
+#include "Components/StaticMeshComponent.h"
+#include "Components/SkeletalMeshComponent.h"
+#include "UObject/ConstructorHelpers.h"
 
-// Sets default values
 ABaseItem::ABaseItem()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	RootScene = CreateDefaultSubobject<USceneComponent>(TEXT("RootScene"));
+	RootScene->SetWorldScale3D(FVector(1.1f));
+	RootComponent = RootScene;
+
+	BaseStaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BaseStaticMesh"));
+	BaseStaticMesh->SetCollisionProfileName("IgnoreAll");
+	BaseStaticMesh->SetupAttachment(RootScene);
+
+	BaseSkeletalMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("BaseSkeletalMesh"));
+	BaseSkeletalMesh->SetCollisionProfileName("IgnoreAll");
+	BaseSkeletalMesh->SetupAttachment(RootScene);
+
 	PrimaryActorTick.bCanEverTick = true;
 
+	/*static ConstructorHelpers::FObjectFinder<UDataTable> ItemDataTableAsset(TEXT("DataTable'/Game/Blueprints/Data/ItemData_DT.ItemData_DT'"));
+	if (ItemDataTableAsset.Object != NULL)
+		ItemDataTable = ItemDataTableAsset.Object;*/
 }
 
-// Called when the game starts or when spawned
 void ABaseItem::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
-// Called every frame
 void ABaseItem::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
+void ABaseItem::AttachToCharacterHand(ACharacter* TargetCharacter)
+{
+	this->AttachToComponent(TargetCharacter->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, "HandSocket");
+}

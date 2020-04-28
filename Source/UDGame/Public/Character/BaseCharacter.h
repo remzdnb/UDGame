@@ -24,13 +24,23 @@ public:
 	UPROPERTY()
 	uint8 TeamID;
 
-	//UPROPERTY()
-
 private:
 
 	class ABaseAIController* AIController;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, category = "Components", meta = (AllowPrivateAccess = "true"))
 	class UWidgetComponent* GroundWidgetComponent;
+
+	// Weapons
+
+public:
+
+	void EquipRangedWeapon();
+
+private:
+
+	class AWeaponItem* EquipedWeapon;
+	class ARangedWeapon* RangedWeapon;
+	class AMeleeWeapon* MeleeWeapon;
 };
 
