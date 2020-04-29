@@ -1,8 +1,10 @@
 // UDGame
 #include "Character/BaseCharacter.h"
 #include "Character/BaseAIController.h"
-// ItemModule
-#include "ItemModule.h"
+#include "Weapon/RangedWeapon.h"
+#include "Weapon/MeleeWeapon.h"
+#include "Game/BaseGameInstance.h"
+#include "UDGameTypes.h"
 // Engine
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -10,6 +12,8 @@
 #include "Components/WidgetComponent.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Engine/World.h"
+#include "Engine/Engine.h"
+#include "Kismet/GameplayStatics.h"
 
 ABaseCharacter::ABaseCharacter()
 {
@@ -28,14 +32,18 @@ ABaseCharacter::ABaseCharacter()
 	PrimaryActorTick.bStartWithTickEnabled = true;
 }
 
-void ABaseCharacter::Init(FName TableRowName, uint8 NewTeamID)
+void ABaseCharacter::Init(FName TableRowName, ETeam NewTeam)
 {
-	TeamID = NewTeamID;
+	Team = NewTeam;
 }
 
 void ABaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	GInstance = Cast<UBaseGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+
+	SetRangedWeapon("LaserRifle");
 }
 
 void ABaseCharacter::Tick(float DeltaSeconds)
@@ -43,12 +51,56 @@ void ABaseCharacter::Tick(float DeltaSeconds)
     Super::Tick(DeltaSeconds);
 }
 
+void ABaseCharacter::OnRifleEquiped_Anim()
+{
+}
+
+void ABaseCharacter::OnPistolEquiped_Anim()
+{
+}
+
+void ABaseCharacter::OnMeleeEquiped_Anim()
+{
+}
+
+void ABaseCharacter::OnAttack_Anim()
+{
+}
+
+void ABaseCharacter::OnReload_Anim()
+{
+}
+
+void ABaseCharacter::SetRangedWeapon(FName RowName)
+{
+	if (RangedWeapon)
+		RangedWeapon->Destroy();
+
+	FTransform SpawnTransform = FTransform(FRotator::ZeroRotator, FVector::ZeroVector, FVector(1.0f));
+	ARangedWeapon* Weapon = GetWorld()->SpawnActorDeferred<ARangedWeapon>(GInstance->GetWeaponDataFromRow(RowName)->WeaponBP, SpawnTransform, this, this, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+	if (Weapon)
+	{
+		UGameplayStatics::FinishSpawningActor(Weapon, SpawnTransform);
+		RangedWeapon = Weapon;
+	}
+
+	EquipRangedWeapon();
+}
+
+void ABaseCharacter::SetMeleeWeapon(FName RowName)
+{
+}
+
 void ABaseCharacter::EquipRangedWeapon()
 {
-	/*if (RangedWeapon)
+	if (RangedWeapon)
 	{
-		EquipedWeapon = RangedWeapon;
-		EquipedWeapon->AttachToComponent(Cast<USceneComponent>(GetMesh()), FAttachmentTransformRules::SnapToTargetNotIncludingScale, "HandSocket");
-	}*/
+		//EquipedWeapon = RangedWeapon;
+		RangedWeapon->AttachToComponent(Cast<USceneComponent>(GetMesh()), FAttachmentTransformRules::SnapToTargetNotIncludingScale, "HandSocket");
+	}
+}
+
+void ABaseCharacter::EquipMeleeWeapon()
+{
 }
 

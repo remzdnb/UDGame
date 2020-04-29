@@ -1,16 +1,8 @@
 #pragma once
 
-#include "CoreMinimal.h"
+#include "UDGameTypes.h"
 #include "AIController.h"
 #include "BaseAIController.generated.h"
-
-UENUM(BlueprintType)
-enum class EAIState : uint8
-{
-	MovingToObjective,
-	AttackingObjective,
-	AttackingCharacter
-};
 
 UCLASS()
 class UDGAME_API ABaseAIController : public AAIController
@@ -22,5 +14,19 @@ public:
 	ABaseAIController();
 
 	virtual void BeginPlay() override;
-	//virtual void Tick(float DeltaTime) override;
+	virtual void Tick(float DeltaTime) override;
+	virtual void OnPossess(APawn* InPawn) override;
+
+protected:
+
+	class ABaseCharacter* PossessedCharacter;
+
+	class ABaseCharacter* FindClosestEnemyCharacter();
+
+
+private:
+
+
+	UPROPERTY()
+	TArray<ABaseCharacter*> DetectedCharacters;
 };

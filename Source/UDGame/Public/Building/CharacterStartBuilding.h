@@ -1,6 +1,7 @@
 #pragma once
 
 #include "BaseBuilding.h"
+#include "UDGameTypes.h"
 #include "Components/ArrowComponent.h"
 #include "CharacterStartBuilding.generated.h"
 
@@ -13,11 +14,14 @@ public:
 
 	ACharacterStartBuilding();
 
-	FTransform GetSpawnTransform();
-
-private:
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UArrowComponent* Arrow;
-	
+
+	UPROPERTY(EditAnywhere, Category = "Spawn Settings")
+	bool bIsActive;
+
+	UPROPERTY(EditAnywhere, Category = "Spawn Settings")
+	ETeam Team;
+
+	FTransform GetSpawnTransform();
 };

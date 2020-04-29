@@ -1,4 +1,14 @@
+// UDGame
 #include "Character/BaseAIController.h"
+#include "Character/BaseCharacter.h"
+#include "UDGameTypes.h"
+// Engine
+#include "BehaviorTree/BlackboardComponent.h"
+#include "BehaviorTree/BehaviorTreeComponent.h"
+#include "BehaviorTree/BehaviorTree.h"
+#include "Engine/Engine.h"
+#include "EngineUtils.h"
+
 
 ABaseAIController::ABaseAIController()
 {
@@ -8,6 +18,43 @@ ABaseAIController::ABaseAIController()
 void ABaseAIController::BeginPlay()
 {
 	Super::BeginPlay();
-
-	MoveToLocation(FVector(0, 0, 0));
 }
+
+void ABaseAIController::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+}
+
+void ABaseAIController::OnPossess(APawn* InPawn)
+{
+	Super::OnPossess(InPawn);
+
+	PossessedCharacter = Cast<ABaseCharacter>(InPawn);
+
+	/*if (Cast<ABaseCharacter>(InPawn)->Team == ETeam::Ally)
+	{
+
+	}
+	if (Cast<ABaseCharacter>(InPawn)->Team == ETeam::Enemy)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, "enemy");
+
+
+	}
+	*/
+
+}
+ABaseCharacter* ABaseAIController::FindClosestEnemyCharacter()
+{
+	for (TActorIterator<ABaseCharacter> ItrCharacter(GetWorld()); ItrCharacter; ++ItrCharacter)
+	{
+		if (ItrCharacter->Team != PossessedCharacter->Team)
+		{
+			return *ItrCharacter;
+		}
+	}
+
+	return nullptr;
+}
+
+

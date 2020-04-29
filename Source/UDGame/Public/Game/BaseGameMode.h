@@ -1,6 +1,5 @@
 #pragma once
 
-#include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
 #include "BaseGameMode.generated.h"
 
@@ -16,10 +15,16 @@ public:
 	virtual void BeginPlay() override;
 
 	UFUNCTION(BlueprintCallable)
-	void SpawnCharacter(uint8 TeamID);
+	void SpawnAllCharacters();
+
+	UFUNCTION(BlueprintCallable)
+	void SpawnCharacter(FTransform SpawnTransform, ETeam Team);
 
 	UPROPERTY(EditDefaultsOnly, Category = "Character")
-	TSubclassOf<class ABaseCharacter> BaseCharacterBP;
+	TSubclassOf<class ABaseCharacter> AllyCharacterBP;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Character")
+	TSubclassOf<class ABaseCharacter> EnemyCharacterBP;
 
 private:
 

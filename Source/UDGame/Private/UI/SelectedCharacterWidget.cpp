@@ -1,5 +1,5 @@
+#include "UI/SelectedCharacterWidget.h" // Expected First
 #include "Game/BaseGameInstance.h"
-#include "UI/SelectedCharacterWidget.h"
 #include "Components/TextBlock.h"
 #include "Components/ComboBoxString.h"
 #include "Kismet/GameplayStatics.h"
