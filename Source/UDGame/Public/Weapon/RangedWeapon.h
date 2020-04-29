@@ -1,17 +1,31 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
 #include "BaseWeapon.h"
 #include "RangedWeapon.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class UDGAME_API ARangedWeapon : public ABaseWeapon
 {
 	GENERATED_BODY()
 	
+private:
+
+	UPROPERTY()
+	uint32 ClipAmmo;
+
+	UPROPERTY()
+	uint32 StockAmmo;
+
+	UPROPERTY()
+	bool bHasInfiniteAmmo;
+
+	UPROPERTY()
+	bool bIsReloading = false;
+
+	FTimerHandle ReloadTimerHandle;
+
+	void FireOnce() override;
+
+	void SpawnProjectile(FTransform SpawnTransform);
 };

@@ -1,7 +1,6 @@
 #pragma once
 
 #include "UDGameTypes.h"
-#include "Engine/DataTable.h"
 #include "Engine/GameInstance.h"
 #include "BaseGameInstance.generated.h"
 
@@ -15,23 +14,19 @@ public:
 	UBaseGameInstance();
 
 	UPROPERTY(EditAnywhere)
-	UDataTable* GlobalDataTable;
+	class UDataTable* GlobalDataTable;
 
 	UPROPERTY(EditAnywhere)
-	UDataTable* WeaponDataTable;
+	class UDataTable* CharacterDataTable;
 
-	FWeaponData* GetWeaponDataFromRow(FName RowName) const;
+	UPROPERTY(EditAnywhere)
+	class UDataTable* WeaponDataTable;
 
 	TArray<FName> GetWeaponDataRowNames();
+	TArray<FName> GetCharacterDataRowNames();
 
-	//UDataTable* CharacterDataTable;
-	//UDataTable* WeaponDataTable;
-	//FCharacterData* GetCharacterDataFromRow(FName RowName) const;
-	//FWeaponData* GetWeaponDataFromRow(FName RowName) const;
+	FWeaponData* GetWeaponDataFromRow(FName RowName) const;
+	FCharacterData* GetCharacterDataFromRow(FName RowName) const;
 
-	FGlobalData GlobalData;
-
-protected:
-
-	virtual void OnStart() override;
+	FGlobalData GlobalData; // ?
 };

@@ -17,16 +17,20 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	virtual void OnPossess(APawn* InPawn) override;
 
+	FORCEINLINE class ABaseCharacter* GetTargetCharacter() const { return TargetCharacter; }
+
 protected:
 
+	UPROPERTY()
 	class ABaseCharacter* PossessedCharacter;
 
-	class ABaseCharacter* FindClosestEnemyCharacter();
-
-
-private:
-
+	UPROPERTY()
+	class ABaseCharacter* TargetCharacter;
 
 	UPROPERTY()
-	TArray<ABaseCharacter*> DetectedCharacters;
+	TArray<class ABaseCharacter*> DetectedCharacters;
+
+	class ABaseCharacter* FindClosestEnemyCharacter();
+	bool CanMeleeAttackTarget();
+
 };

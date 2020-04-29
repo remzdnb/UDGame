@@ -57,4 +57,17 @@ ABaseCharacter* ABaseAIController::FindClosestEnemyCharacter()
 	return nullptr;
 }
 
+bool ABaseAIController::CanMeleeAttackTarget()
+{
+	if (TargetCharacter)
+	{
+		if (FVector::Dist(TargetCharacter->GetActorLocation(), PossessedCharacter->GetActorLocation()) < 200.0f)
+			return true;
+		else
+			return false;
+	}
+
+	return false;
+}
+
 

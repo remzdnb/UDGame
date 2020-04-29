@@ -16,5 +16,7 @@ public:
 
 private:
 
+	void UpdateAllyAI();
 	void UpdateDetectedCharacters();
+	void SelectTargetCharacter();
 };
