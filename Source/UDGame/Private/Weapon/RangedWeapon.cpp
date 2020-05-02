@@ -1,8 +1,8 @@
 // UDGame
 #include "Weapon/RangedWeapon.h"
 #include "Weapon/BaseProjectile.h"
-#include "Character/BaseCharacter.h"
-#include "Character/BaseAIController.h"
+#include "Pawn/BaseCharacter.h"
+#include "Pawn/BaseAIController.h"
 // Engine
 #include "Engine/World.h"
 #include "Engine/Engine.h"
@@ -13,10 +13,6 @@
 void ARangedWeapon::FireOnce()
 {
 	Super::FireOnce();
-
-	//LastFireTime = GetWorld()->GetTimeSeconds();
-
-	ClipAmmo -= 1;
 
 	if (BaseSkeletalMesh)
 	{
@@ -29,7 +25,6 @@ void ARangedWeapon::FireOnce()
 
 void ARangedWeapon::SpawnProjectile(FTransform SpawnTransform)
 {
-	GEngine->AddOnScreenDebugMessage(7, 0.1f, FColor::Yellow, FString::Printf(TEXT("CA cASSE DES MERES")));
 	const FActorSpawnParameters SpawnParameters;
 
 	ABaseProjectile* const Projectile = GetWorld()->SpawnActorDeferred<ABaseProjectile>(WeaponData.ProjectileBP, SpawnTransform, this, OwnerCharacter);

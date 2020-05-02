@@ -1,5 +1,3 @@
-// Copyright 1998-2019 Epic Games, Inc. All Rights Reserved.
-
 using UnrealBuildTool;
 using System.Collections.Generic;
 
@@ -10,5 +8,7 @@ public class UDGameTarget : TargetRules
 		Type = TargetType.Game;
 		DefaultBuildSettings = BuildSettingsVersion.V2;
 		ExtraModuleNames.Add("UDGame");
+		ExtraModuleNames.Add("UDCombatModule");
+		//ExtraModuleNames.Add("UDCampaignModule");
 	}
 }

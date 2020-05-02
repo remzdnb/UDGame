@@ -1,8 +1,9 @@
 #pragma once
 
 #include "Engine/DataTable.h"
-#include "GameFramework/Actor.h"
 #include "UDGameTypes.generated.h"
+
+#pragma region ++ Global ...
 
 UENUM(BlueprintType)
 enum class ETeam : uint8
@@ -17,10 +18,26 @@ struct FGlobalData : public FTableRowBase
 {
 	GENERATED_USTRUCT_BODY()
 
+	UPROPERTY(EditDefaultsOnly, Category = "Character")
+	TSubclassOf<class ABaseCharacter> AllyCharacterBP;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Character")
+	TSubclassOf<class ABaseCharacter> EnemyCharacterBP;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Widgets")
+	TSubclassOf<UUserWidget> SelectedCharacterWidgetBP;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Widgets")
+	TSubclassOf<UUserWidget> CombatGameModeWidgetBP;
+
 	FGlobalData()
 	{
 	}
 };
+
+#pragma endregion
+
+#pragma region ++ Character ...
 
 USTRUCT(BlueprintType)
 struct FCharacterData : public FTableRowBase
@@ -42,6 +59,37 @@ struct FCharacterData : public FTableRowBase
 	UPROPERTY(EditDefaultsOnly)
 	FName MeleeWeaponRowName;
 };
+
+#pragma endregion
+
+#pragma region ++ Building ...
+
+USTRUCT(BlueprintType)
+struct FBuildingData : public FTableRowBase
+{
+	GENERATED_USTRUCT_BODY()
+
+	UPROPERTY(EditDefaultsOnly)
+	float MaxHealth;
+
+	UPROPERTY(EditDefaultsOnly)
+	FName RangedWeaponRowName;
+
+	UPROPERTY(EditDefaultsOnly)
+	FName RingBoneName;
+
+	UPROPERTY(EditDefaultsOnly)
+	FName BarrelBoneName;
+
+	FBuildingData()
+	{
+		MaxHealth = 1000.0f;
+	}
+};
+
+#pragma endregion
+
+#pragma region ++ Weapon ...
 
 UENUM(BlueprintType)
 enum class EWeaponSlot : uint8
@@ -96,6 +144,8 @@ struct FWeaponData : public FTableRowBase
 	}
 };
 
+#pragma endregion
+
 /*#define print(text)                         if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 1.5f, FColor::White, TEXT(text), false)
 #define printc(channel, text)               if (GEngine) GEngine->AddOnScreenDebugMessage(channel, 1.5f, FColor::White, TEXT(text))
 #define printf(format, ...)                 if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 1.5f, FColor::White, FString::Printf(TEXT(format), ##__VA_ARGS__), false)
@@ -116,3 +166,7 @@ struct FWeaponData : public FTableRowBase
  
 #define printvector(variable)               if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 1.5f, FColor::Green, FString::Printf(TEXT(#variable ": %s"), *variable.ToCompactString()), false)
 #define printcvector(channel, variable)     if (GEngine) GEngine->AddOnScreenDebugMessage(channel, 1.5f, FColor::Green, FString::Printf(TEXT(#variable ": %s"), *variable.ToCompactString()))*/
+
+//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Hit Result: %s"), *Hit.Actor->GetName()));
+// uncommnet to see more info on sweeped actor
+// GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("All Hit Information: %s"), *Hit.ToString()));

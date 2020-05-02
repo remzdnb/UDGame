@@ -16,9 +16,6 @@ public:
 	virtual void DrawHUD() override;
 	virtual void BeginPlay() override;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Widgets")
-	TSubclassOf<UUserWidget> SelectedCharacterWidgetBP;
-
 	UFUNCTION()
 	void UpdateSelectedCharacterWidget(class ABaseCharacter* SelectedCharacter);
 
@@ -33,4 +30,7 @@ private:
 
 	UPROPERTY()
 	class USelectedCharacterWidget* SelectedCharacterWidget;
+
+	UPROPERTY()
+	class UCombatGameModeWidget* CombatGameModeWidget;
 };

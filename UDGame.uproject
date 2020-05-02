@@ -11,17 +11,19 @@
 			"AdditionalDependencies": [
 				"Engine",
 				"AIModule",
-				"UMG"
+				"UMG",
+				"UDCombatModule"
 			]
 		},
 		{
-			"Name": "ItemModule",
+			"Name": "UDCombatModule",
 			"Type": "Runtime",
 			"LoadingPhase": "Default",
 			"AdditionalDependencies": [
 				"Engine",
 				"AIModule",
-				"UMG"
+				"UMG",
+				"UDGame"
 			]
 		}
 	]

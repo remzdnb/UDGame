@@ -1,8 +1,9 @@
 // UDGame
 #include "Weapon/BaseWeapon.h"
-#include "Character/BaseCharacter.h"
-#include "Character/BaseAIController.h"
-#include "Game/BaseGameInstance.h"
+#include "Pawn/BaseCharacter.h"
+#include "Pawn/BaseAIController.h"
+#include "Core/BaseGameInstance.h"
+#include "RZAnimInstance.h"
 // Engine
 #include "Components/StaticMeshComponent.h"
 #include "Components/SkeletalMeshComponent.h"
@@ -54,9 +55,8 @@ void ABaseWeapon::Tick(float DeltaTime)
 
 	if (OwnerCharacter)
 	{
-		if (GetWorld()->GetTimeSeconds() - LastFireTime > WeaponData.FireRate && OwnerCharacter->AIController->GetTargetCharacter())
+		if (bWantsToFire && GetWorld()->GetTimeSeconds() - LastFireTime > WeaponData.FireRate && OwnerCharacter->AIController->GetTargetCharacter())
 		{
-			GEngine->AddOnScreenDebugMessage(5, 0.1f, FColor::Red, FString::Printf(TEXT("CA TIRE")));
 			FireOnce();
 		}
 	}
@@ -84,6 +84,8 @@ void ABaseWeapon::SetVisibility(bool bNewVisibility)
 void ABaseWeapon::FireOnce()
 {
 	LastFireTime = GetWorld()->GetTimeSeconds();
+
+	OwnerCharacter->AnimInstance->StartAttackAnimation();
 }
 
 

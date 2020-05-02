@@ -1,5 +1,5 @@
 #include "UI/SelectedCharacterWidget.h" // Expected First
-#include "Game/BaseGameInstance.h"
+#include "Core/BaseGameInstance.h"
 #include "Components/TextBlock.h"
 #include "Components/ComboBoxString.h"
 #include "Kismet/GameplayStatics.h"
@@ -15,7 +15,7 @@ void USelectedCharacterWidget::NativeConstruct()
 
 	GInstance = Cast<UBaseGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
 
-	for (FName RowName : GInstance->GetWeaponDataRowNames())
+	for (FName RowName : GInstance->GetWeaponDataTableRowNames())
 	{
 		RangedWeaponCBox->AddOption(RowName.ToString());
 	}

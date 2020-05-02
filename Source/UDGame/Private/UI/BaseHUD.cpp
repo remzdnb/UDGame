@@ -1,9 +1,9 @@
 #include "UI/BaseHUD.h"
 #include "UI/SelectedCharacterWidget.h"
-#include "Game/BaseGameInstance.h"
-#include "Game/BasePlayerController.h"
+#include "UI/CombatGameModeWidget.h"
+#include "Core/BaseGameInstance.h"
+#include "Core/BasePlayerController.h"
 #include "Kismet/GameplayStatics.h"
-
 #include "Engine/Engine.h"
 
 ABaseHUD::ABaseHUD()
@@ -19,14 +19,18 @@ void ABaseHUD::BeginPlay()
 {
 	Super::BeginPlay();
 
+	GInstance = Cast<UBaseGameInstance>(GetGameInstance());
 	OwnerPC = Cast<ABasePlayerController>(GetOwner());
 
-	SelectedCharacterWidget = CreateWidget<USelectedCharacterWidget>(GetWorld(), SelectedCharacterWidgetBP);
+	SelectedCharacterWidget = CreateWidget<USelectedCharacterWidget>(GetWorld(), GInstance->GetGlobalDataFromRow("Default")->SelectedCharacterWidgetBP);
 	if (SelectedCharacterWidget)
 		SelectedCharacterWidget->AddToViewport();
 
 	OwnerPC->OnCharacterSelectionUpdated.AddDynamic(this, &ABaseHUD::UpdateSelectedCharacterWidget);
 
+	CombatGameModeWidget = CreateWidget<UCombatGameModeWidget>(GetWorld(), GInstance->GetGlobalDataFromRow("Default")->CombatGameModeWidgetBP);
+	if (CombatGameModeWidget)
+		CombatGameModeWidget->AddToViewport();
 
 	/*void UGameControlsWidget::CreateWeaponSlots()
 {

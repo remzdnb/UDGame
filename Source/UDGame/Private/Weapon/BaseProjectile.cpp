@@ -1,6 +1,6 @@
 // UDGame
 #include "Weapon/BaseProjectile.h"
-#include "Character/BaseCharacter.h"
+#include "Pawn/BaseCharacter.h"
 // Engine
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Engine/StaticMesh.h"
