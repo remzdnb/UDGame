@@ -15,21 +15,9 @@ public:
 
 	virtual void BeginPlay() override;
 
-	FORCEINLINE AActor* GetTargetCharacter() const { return TargetActor; }
+	FORCEINLINE AActor* GetTargetActor() const { return TargetActor; }
 
 protected:
 
 	UPROPERTY(Transient) AActor* TargetActor;
-
-	// del
-
-public:
-
-	void MovePossessedCharacter(FVector TargetLocation);
-
-protected:
-
-	bool bIsMoving;
-	FVector TargetLocation;
-
 };

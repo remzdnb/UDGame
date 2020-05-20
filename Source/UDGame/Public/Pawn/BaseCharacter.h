@@ -2,11 +2,12 @@
 
 #include "UDGameTypes.h"
 #include "Core/InteractionInterface.h"
+#include "Pawn/PawnInterface.h"
 #include "GameFramework/Character.h"
 #include "BaseCharacter.generated.h"
 
 UCLASS(Blueprintable)
-class ABaseCharacter : public ACharacter, public IInteractionInterface
+class ABaseCharacter : public ACharacter, public IInteractionInterface, public IPawnInterface
 {
 	GENERATED_BODY()
 
@@ -14,83 +15,50 @@ public:
 
 	ABaseCharacter();
 
-	void Init(FName NewTableRowName, ETeam NewTeam, class ANavBlock* SpawnNavBlock);
+	void Init(FName NewTableRowName, ETeam Team, class ANavBlock* SpawnNavBlock);
 
 	virtual void BeginPlay() override;
 	virtual void BeginDestroy() override;
 	virtual void Tick(float DeltaSeconds) override;
 
-	UPROPERTY()
-	class UBaseGameInstance* GInstance;
-
-	UPROPERTY()
-	class URZAnimInstance* AnimInstance;
-
-	UPROPERTY()
-	class ABaseAIController* AIController;
-
-	UPROPERTY()
-	FString CharacterName;
-
-	UPROPERTY()
-	FName TableRowName;
-
-	UPROPERTY()
-	FCharacterData CharacterData;
-
-	UPROPERTY()
-	ETeam Team;
-
-	UFUNCTION(BlueprintImplementableEvent)
-	void EquipRifle_Anim();
-
-	UFUNCTION(BlueprintImplementableEvent)
-	void EquipPistol_Anim();
-
-	UFUNCTION(BlueprintImplementableEvent)
-	void EquipMelee_Anim();
-
-	// Components
-
-public:
-
+	FORCEINLINE class UNavigationComponent* GetNavigationComponent() const { return NavigationCPT; }
 	FORCEINLINE class UCombatComponent* GetCombatComponent() const { return CombatCPT; }
 	FORCEINLINE class UDetectionComponent* GetDetectionComponent() const { return DetectionCPT; }
-	FORCEINLINE class UStatsComponent* GetStatsComponent() const { return StatsComponent; }
-	FORCEINLINE ETeam GetTeam() const { return Team; }
+	FORCEINLINE class UStatsComponent* GetStatsComponent() const { return StatsCPT; }
+	FORCEINLINE class ACharacterAIController* GetAIController() const { return AIController; }
+	FORCEINLINE class URZAnimInstance* GetAnimInstance() const { return AnimInstance; }
 
 private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, category = "Components", meta = (AllowPrivateAccess = "true"))
-	class UCombatComponent* CombatCPT;
+	class UNavigationComponent* NavigationCPT;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, category = "Components", meta = (AllowPrivateAccess = "true"))
 	class UDetectionComponent* DetectionCPT;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, category = "Components", meta = (AllowPrivateAccess = "true"))
-	class UStatsComponent* StatsComponent;
+	class UCombatComponent* CombatCPT;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, category = "Components", meta = (AllowPrivateAccess = "true"))
-	class UOutlineComponent* OutlineComponent;
+	class UStatsComponent* StatsCPT;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, category = "Components", meta = (AllowPrivateAccess = "true"))
+	class URZMeshFlashComponent* MeshFlashCT;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, category = "Components", meta = (AllowPrivateAccess = "true"))
+	class URZOutlineComponent* OutlineCT;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, category = "Components", meta = (AllowPrivateAccess = "true"))
 	class UWidgetComponent* TopWidgetComponent;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, category = "Components", meta = (AllowPrivateAccess = "true"))
-	class UWidgetComponent* GroundWidgetComponent;
+	UPROPERTY(Transient) class UBaseGameInstance* GInstance;
+	UPROPERTY(Transient) class ACharacterAIController* AIController;
+	UPROPERTY(Transient) class URZAnimInstance* AnimInstance;
 
-	// Navigation
+	UPROPERTY() FName TableRowName;
+	UPROPERTY() FCharacterData CharacterData;
 
-public:
-
-	FORCEINLINE class ANavBlock* GetTargetNavBlock() const { return TargetNavBlock; }
-	void SetTargetNavBlock(class ANavBlock* TargetNavBlock);
-
-private:
-
-	class ANavBlock* TargetNavBlock;
-
-	// Inventory - Component ?
+	// Inventory
 
 public:
 
@@ -114,31 +82,42 @@ public:
 
 	UFUNCTION() void StartAttacking();
 	UFUNCTION() void StopAttacking();
-	UFUNCTION() void TakeAttack(bool bIsHit, float Damage, bool bIsCritical);
 	UFUNCTION() void Die(bool bZdead);
 
 private:
 
 	bool bIsDead;
 
-	// Interaction Interface
+#pragma region ///// Interfaces ...
 
 public:
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	void OnHoverStart();
-	virtual void OnHoverStart_Implementation() override;
+	// Interaction Interface
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	void OnHoverStop();
-	virtual void OnHoverStop_Implementation() override;
+	void OnHoverStart() override;
+	void OnHoverStop() override;
+	void OnSelectionStart() override;
+	void OnSelectionStop() override;
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	void OnLeftClick();
-	virtual void OnLeftClick_Implementation() override;
+	// Pawn Interface
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	void OnRightClick();
-	virtual void OnRightClick_Implementation() override;
+	ETeam GetTeam() override;
+	AActor* GetTargetActor() override;
+	class ABaseWeapon* GetEquipedWeapon() override;
+
+	class UNavigationComponent* GetNavigationComponent() override;
+	class UDetectionComponent* GetDetectionComponent() override;
+	class UCombatComponent* GetCombatComponent() override;
+	class UStatsComponent* GetStatsComponent() override;
+	class UInventoryComponent* GetInventoryComponent() override;
+	class URZMeshFlashComponent* GetMeshFlashComponent() override;
+	class URZOutlineComponent* GetOutlineComponent() override;
+
+	virtual void SetWeaponAnimation(EWeaponAnimation WeaponAnimation) override;
+	virtual void PlayAttackAnimation() override;
+	virtual void PlayReloadAnimation() override;
+
+#pragma endregion
+
 };
 

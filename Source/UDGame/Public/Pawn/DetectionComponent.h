@@ -1,5 +1,6 @@
 #pragma once
 
+#include "UDGameTypes.h"
 #include "Components/ActorComponent.h"
 #include "DetectionComponent.generated.h"
 
@@ -32,5 +33,7 @@ private:
 
 	bool bIsActiveDetectionEnabled;
 
-	void DetectVisibleCharacters();
+	void DetectVisibleCharacters(ETeam Team);
+
+	void Debug();
 };

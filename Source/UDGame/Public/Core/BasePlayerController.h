@@ -7,7 +7,7 @@
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FCharacterSelectionUpdate, ABaseCharacter*, SelectedCharacter);
 
 UCLASS()
-class ABasePlayerController : public APlayerController, public IInteractionInterface
+class ABasePlayerController : public APlayerController
 {
 	GENERATED_BODY()
 
@@ -15,34 +15,25 @@ public:
 
 	ABasePlayerController();
 
-	UFUNCTION(BlueprintCallable)
-	void OnLeft();
-
-	UFUNCTION(BlueprintCallable)
-	void OnRight();
-
-	UFUNCTION(BlueprintCallable)
-	void SelectCharacter();
-
-	UFUNCTION(BlueprintCallable)
-	void MoveCharacter();
+	UFUNCTION(BlueprintCallable) void UpdateHoveredActor();
+	UFUNCTION(BlueprintCallable) void UpdateSelectedActor();
 
 	UPROPERTY(BlueprintAssignable, Category = "Event Dispatchers")
 	FCharacterSelectionUpdate OnCharacterSelectionUpdated;
 
 protected:
 
+	virtual void BeginPlay() override;
 	virtual void PlayerTick(float DeltaTime) override;
 	virtual void SetupInputComponent() override;
 
 private:
 
-	UPROPERTY() AActor* LastHoveredActor;
-	UPROPERTY() class ABaseCharacter* HoveredCharacter; //Transient ?
-	UPROPERTY() class ABaseCharacter* SelectedCharacter;
+	UPROPERTY(Transient) class ACombatGameMode* GMode;
+	UPROPERTY(Transient) class ANavManager* NavManager;
 
-	AActor* GetHoveredActor();
-
+	UPROPERTY(Transient) AActor* HoveredActor;
+	UPROPERTY(Transient) AActor* SelectedActor;
 };
 
 

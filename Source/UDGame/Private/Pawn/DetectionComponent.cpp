@@ -26,79 +26,76 @@ void UDetectionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	if (ParentActor && bIsActiveDetectionEnabled)
-		DetectVisibleCharacters();
+		DetectVisibleCharacters(ETeam::Enemy);
+
+	//Debug();
 }
 
-void UDetectionComponent::DetectVisibleCharacters()
+void UDetectionComponent::DetectVisibleCharacters(ETeam Team)
 {
-	DetectedCharacters.Empty();
 	TArray<class ABaseCharacter*> NewDetectedCharacters;
 
-	for (TActorIterator<ABaseCharacter> ItrCharacter(GetWorld()); ItrCharacter; ++ItrCharacter) // Update
+	for (TActorIterator<ABaseCharacter> LocalCharacter(GetWorld()); LocalCharacter; ++LocalCharacter)
 	{
-		if (ItrCharacter->GetIsDead() == false && ItrCharacter->Team == ETeam::Enemy)
+		if (LocalCharacter->GetIsDead() == false && Team == ETeam::Enemy) // ugly ass bih
 		{
-			FHitResult OutHit;
+			TArray<FHitResult> OutHits;
 			FCollisionQueryParams CollisionParams;
-			FVector Start = FVector(ParentActor->GetActorLocation().X, ParentActor->GetActorLocation().Y, ItrCharacter->GetActorLocation().Z + 50.0f);
-			FVector End = FVector(ItrCharacter->GetActorLocation().X, ItrCharacter->GetActorLocation().Y, ItrCharacter->GetActorLocation().Z + 50.0f);
+			FVector Start = FVector(ParentActor->GetActorLocation().X, ParentActor->GetActorLocation().Y, LocalCharacter->GetActorLocation().Z + 50.0f);
+			FVector End = FVector(LocalCharacter->GetActorLocation().X, LocalCharacter->GetActorLocation().Y, LocalCharacter->GetActorLocation().Z + 50.0f);
 
-			if (GetWorld()->LineTraceSingleByChannel(OutHit, Start, End, ECC_GameTraceChannel1, CollisionParams))
+			GetWorld()->LineTraceMultiByChannel(OutHits, Start, End, ECC_GameTraceChannel8, CollisionParams);
+			for (auto& OutHit : OutHits)
 			{
-				if (OutHit.bBlockingHit)
+				ABaseCharacter* HitCharacter = Cast<ABaseCharacter>(OutHit.GetActor());
+				if (HitCharacter == *LocalCharacter)
 				{
 					DrawDebugLine(GetWorld(), Start, OutHit.Location, FColor::Green, false, 0.1f, 0, 1);
 
-					ABaseCharacter* CurrentCharacter = Cast<ABaseCharacter>(OutHit.GetActor());
-					if (CurrentCharacter)
-					{
-						NewDetectedCharacters.Add(CurrentCharacter);
-						DetectedCharacters.Add(CurrentCharacter);
-					}
+					NewDetectedCharacters.Add(HitCharacter);
 
-
-					if (GEngine) {
-
-						//GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString::Printf(TEXT("You are hitting: %s"), *OutHit.GetActor()->GetName()));
-						//GEngine->AddOnScreenDebugMessage(2, 1.f, FColor::Orange, FString::Printf(TEXT("Impact Point: %s"), *OutHit.ImpactPoint.ToString()));
-						//GEngine->AddOnScreenDebugMessage(3, 1.f, FColor::Yellow, FString::Printf(TEXT("Normal Point: %s"), *OutHit.ImpactNormal.ToString()));
-
-					}
+					//DetectedCharacters.Add(HitCharacter);
+					//RegisterDetectedCharacter(HitCharacter);
 				}
 			}
 		}
 	}
 
-	for (ABaseCharacter* NewDetectedCharacter : NewDetectedCharacters) // update enemy detection
+	for (ABaseCharacter* CurrentCharacter : DetectedCharacters)
 	{
-		if (DetectedCharacters.Contains(NewDetectedCharacter) == false)
-		{
-
-		}
-
+		if (NewDetectedCharacters.Contains(CurrentCharacter) == false)
+			CurrentCharacter->GetDetectionComponent()->UnregisterDetectedCharacter(Cast<ABaseCharacter>(ParentActor));
 	}
+
+	for (ABaseCharacter* CurrentCharacter : NewDetectedCharacters)
+	{
+		if (DetectedCharacters.Contains(CurrentCharacter) == false)
+			CurrentCharacter->GetDetectionComponent()->RegisterDetectedCharacter(Cast<ABaseCharacter>(ParentActor));
+	}
+
+	DetectedCharacters.Empty();
+	for (ABaseCharacter* CurrentCharacter : NewDetectedCharacters)
+		RegisterDetectedCharacter(CurrentCharacter);
 }
 
 ABaseCharacter* UDetectionComponent::GetClosestDetectedCharacter()
 {
+	ABaseCharacter* TMPCharacter = nullptr;
+	float MinDistance = 9999999.9f;
+
 	if (ParentActor)
 	{
-		float MinDistance = 9999999.9f;
-		ABaseCharacter* CharacterRef = nullptr;
-
 		for (ABaseCharacter* CurrentCharacter : DetectedCharacters)
 		{
 			if (FVector::Dist(ParentActor->GetActorLocation(), CurrentCharacter->GetActorLocation()) < MinDistance)
 			{
-				CharacterRef = CurrentCharacter;
+				TMPCharacter = CurrentCharacter;
 				MinDistance = FVector::Dist(ParentActor->GetActorLocation(), CurrentCharacter->GetActorLocation());
 			}
 		}
-
-		return CharacterRef;
 	}
 
-	return nullptr;
+	return TMPCharacter;
 }
 
 ABaseCharacter* UDetectionComponent::GetClosestCharacter()
@@ -149,3 +146,28 @@ bool UDetectionComponent::HasDetectedCharacter()
 	else
 		return false;
 }
+
+void UDetectionComponent::Debug()
+{
+	ABaseCharacter* DebugCharacter = Cast<ABaseCharacter>(ParentActor);
+	if (DebugCharacter)
+	{
+		if (DebugCharacter->GetTeam() == ETeam::Ally)
+		{
+			int i = 158;
+			for (ABaseCharacter* DetectedCharacter : DetectedCharacters)
+			{
+				GEngine->AddOnScreenDebugMessage(i, 1.f, FColor::Red, FString::Printf(TEXT("Detected: %s"), *DetectedCharacter->GetName()));
+				i++;
+			}
+		}
+	}
+}
+
+/*if (GEngine) {
+
+	//GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString::Printf(TEXT("You are hitting: %s"), *OutHit.GetActor()->GetName()));
+	//GEngine->AddOnScreenDebugMessage(2, 1.f, FColor::Orange, FString::Printf(TEXT("Impact Point: %s"), *OutHit.ImpactPoint.ToString()));
+	//GEngine->AddOnScreenDebugMessage(3, 1.f, FColor::Yellow, FString::Printf(TEXT("Normal Point: %s"), *OutHit.ImpactNormal.ToString()));
+
+}*/

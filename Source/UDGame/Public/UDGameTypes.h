@@ -5,6 +5,16 @@
 
 #pragma region ++ Global ...
 
+UENUM()
+enum class EComponent : uint8
+{
+	Navigation,
+	Detection,
+	Combat,
+	Stats,
+	Inventory
+};
+
 UENUM(BlueprintType)
 enum class ETeam : uint8
 {
@@ -30,8 +40,31 @@ struct FGlobalData : public FTableRowBase
 	UPROPERTY(EditDefaultsOnly, Category = "Widgets")
 	TSubclassOf<UUserWidget> CombatGameModeWidgetBP;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Widgets")
+	TSubclassOf<UUserWidget> FloatingTextWidgetBP;
+
 	FGlobalData()
 	{
+	}
+};
+
+USTRUCT(BlueprintType)
+struct FAttackResult
+{
+	GENERATED_USTRUCT_BODY()
+
+	AActor* Attacker;
+	AActor* Target;
+	class ABaseWeapon* Weapon;
+	bool bIsHit;
+	bool bIsCritical;
+	float FinalDamage;
+
+	FAttackResult()
+	{
+		bIsHit = false;
+		bIsCritical = false;
+		FinalDamage = 0.0f;
 	}
 };
 
@@ -108,31 +141,64 @@ enum class EWeaponState : uint8
 	Reloading
 };
 
+UENUM(BlueprintType)
+enum class EWeaponAnimation : uint8
+{
+	PistolLight,
+	PistolHeavy,
+	Rifle,
+	Sword
+};
+
 USTRUCT(BlueprintType)
 struct FWeaponData : public FTableRowBase
 {
 	GENERATED_USTRUCT_BODY()
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "BaseWeapon")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Base")
 	TSubclassOf<class ABaseWeapon> WeaponBP;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "BaseWeapon")
-	TSubclassOf<class ABaseProjectile> ProjectileBP;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "BaseWeapon")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Base")
 	FString DisplayName;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "BaseWeapon")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Base")
 	EWeaponSlot WeaponSlot;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "BaseWeapon")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Base")
+	EWeaponAnimation WeaponAnimation;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Base")
 	float FireRate;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "BaseWeapon")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Base")
 	float Damage;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "BaseWeapon")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Base")
+	uint8 HitChance;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Base")
 	float CritChance;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Ranged")
+	TSubclassOf<class ABaseProjectile> ProjectileBP;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Ranged")
+	int32 MaxClipAmmo;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Ranged")
+	float ReloadTime;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "FX")
+	class UParticleSystem* MuzzleParticle;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "FX")
+	class UParticleSystem* CharacterImpactParticle;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "FX")
+	class UParticleSystem* WorldImpactParticle;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "FX")
+	class USoundCue* FireSound;
 
 	FWeaponData()
 	{
@@ -140,6 +206,7 @@ struct FWeaponData : public FTableRowBase
 		WeaponSlot = EWeaponSlot::None;
 		FireRate = 0.2f;
 		Damage = 100.0f;
+		HitChance = 80;
 		CritChance = 0.1f;
 	}
 };

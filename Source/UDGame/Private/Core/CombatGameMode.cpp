@@ -1,12 +1,14 @@
+// UDGame
 #include "Core/CombatGameMode.h"
 #include "Core/BaseGameInstance.h"
 #include "Level/NavBlock.h"
 #include "Pawn/BaseCharacter.h"
+#include "Navigation/NavManager.h"
+#include "Navigation/NavTile.h"
+// Engine
 #include "Kismet/GameplayStatics.h"
 #include "EngineUtils.h"
 #include "Engine/Engine.h"
-
-
 #include "Containers/EnumAsByte.h"
 
 ACombatGameMode::ACombatGameMode() :
@@ -19,7 +21,20 @@ void ACombatGameMode::BeginPlay()
 {
 	Super::BeginPlay();
 
-	for (TActorIterator<ANavBlock> Block(GetWorld()); Block; ++Block) // Find and save SpawnBlocks
+	for (TActorIterator<class ANavManager> ItrNavManager(GetWorld()); ItrNavManager; ++ItrNavManager)
+	{
+		NavManager = *ItrNavManager;
+	}
+
+	if (NavManager == nullptr)
+		GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Red, FString::Printf(TEXT("CombatGameMode : NavManager not found.")));
+	else
+	{
+		AllySpawnTiles = NavManager->GetSpawnTiles(0);
+		EnemySpawnTiles = NavManager->GetSpawnTiles(1);
+	}
+
+	/*for (TActorIterator<ANavBlock> Block(GetWorld()); Block; ++Block) // Find and save SpawnBlocks
 	{
 		if (Block->GetIsSpawnEnabled())
 		{
@@ -28,7 +43,7 @@ void ACombatGameMode::BeginPlay()
 			if (Block->GetTeam() == ETeam::Enemy)
 				EnemySpawnBlocks.Add(*Block);
 		}
-	}
+	}*/
 
 	SpawnAllies();
 	Phase = ECombatPhase::AllyTurn;
@@ -50,17 +65,27 @@ void ACombatGameMode::StartAllyTurn()
 
 void ACombatGameMode::SpawnAllies()
 {
-	for (ANavBlock* SpawnBlock : AllySpawnBlocks)
+	for (ANavTile* SpawnTile : AllySpawnTiles)
+	{
+		ABaseCharacter* Character = GetWorld()->SpawnActorDeferred<ABaseCharacter>(GInstance->GetGlobalDataFromRow("Default")->AllyCharacterBP, SpawnTile->GetSpawnTransform());
+		if (Character)
+		{
+			Character->Init("BaseAlly", ETeam::Ally, nullptr);
+			RegisterAliveCharacter(Character, ETeam::Ally);
+			UGameplayStatics::FinishSpawningActor(Character, SpawnTile->GetSpawnTransform());
+		}
+	}
+
+	/*for (ANavBlock* SpawnBlock : AllySpawnBlocks)
 	{
 		ABaseCharacter* Character = GetWorld()->SpawnActorDeferred<ABaseCharacter>(GInstance->GetGlobalDataFromRow("Default")->AllyCharacterBP, SpawnBlock->GetSpawnTransform());
 		if (Character)
 		{
 			Character->Init("BaseAlly", ETeam::Ally, SpawnBlock);
-			SpawnBlock->RegisterActor(Character);
 			RegisterAliveCharacter(Character, ETeam::Ally);
 			UGameplayStatics::FinishSpawningActor(Character, SpawnBlock->GetSpawnTransform());
 		}
-	}
+	}*/
 }
 
 void ACombatGameMode::SpawnEnemies()
@@ -71,7 +96,6 @@ void ACombatGameMode::SpawnEnemies()
 		if (Character)
 		{
 			Character->Init("BaseEnemy", ETeam::Enemy, SpawnBlock);
-			//SpawnBlock->RegisterActor(Character);
 			RegisterAliveCharacter(Character, ETeam::Enemy);
 			UGameplayStatics::FinishSpawningActor(Character, SpawnBlock->GetSpawnTransform());
 		}

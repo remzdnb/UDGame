@@ -1,16 +1,21 @@
 // UDGame
 #include "Pawn/BaseCharacter.h"
-#include "Pawn/BaseAIController.h"
+#include "Pawn/CharacterAIController.h"
+#include "Pawn/NavigationComponent.h"
 #include "Pawn/DetectionComponent.h"
+#include "Pawn/CombatComponent.h"
 #include "Pawn/StatsComponent.h"
 #include "Core/BaseGameInstance.h"
 #include "Core/CombatGameMode.h"
 #include "Weapon/RangedWeapon.h"
 #include "Weapon/MeleeWeapon.h"
-#include "Components/OutlineComponent.h"
 #include "UI/CharacterTopWidget.h"
 #include "UDGameTypes.h"
+// Animation Plugin
 #include "RZAnimInstance.h"
+// VisualEffects Plugin
+#include "RZMeshFlashComponent.h"
+#include "RZOutlineComponent.h"
 // Engine
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -22,9 +27,6 @@
 #include "Engine/Engine.h"
 #include "Kismet/GameplayStatics.h"
 
-//
-#include "Materials/MaterialInstance.h"
-
 ABaseCharacter::ABaseCharacter() :
 	GInstance(nullptr),
 	AIController(nullptr),
@@ -34,32 +36,34 @@ ABaseCharacter::ABaseCharacter() :
 	bIsDead(false)
 {
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
-	GetCharacterMovement()->bOrientRotationToMovement = true; // Rotate character to moving direction
+	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->RotationRate = FRotator(0.f, 640.f, 0.f);
-	PrimaryActorTick.bCanEverTick = true;
 
+	NavigationCPT = CreateDefaultSubobject<UNavigationComponent>(FName("NavigationCPT"));
 	DetectionCPT = CreateDefaultSubobject<UDetectionComponent>(FName("DetectionCPT"));
-	StatsComponent = CreateDefaultSubobject<UStatsComponent>(FName("StatsComponent"));
-	OutlineComponent = CreateDefaultSubobject<UOutlineComponent>(FName("OutlineComponent"));
-	OutlineComponent->RegisterSkeletalMesh(GetMesh());
+	CombatCPT = CreateDefaultSubobject<UCombatComponent>(FName("CombatCPT"));
+	StatsCPT = CreateDefaultSubobject<UStatsComponent>(FName("StatsCPT"));
+	MeshFlashCT = CreateDefaultSubobject<URZMeshFlashComponent>(FName("MeshFlashCT"));
+	OutlineCT = CreateDefaultSubobject<URZOutlineComponent>(FName("OutlineCT"));
+	OutlineCT->RegisterSkeletalMesh(GetMesh());
 	TopWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(FName("TopWidget"));
 	TopWidgetComponent->SetWidgetSpace(EWidgetSpace::Screen);
 	TopWidgetComponent->SetupAttachment(RootComponent);
-	GroundWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(FName("GroundWidget"));
-	GroundWidgetComponent->SetWidgetSpace(EWidgetSpace::World);
-	GroundWidgetComponent->SetupAttachment(RootComponent);
 
+	PrimaryActorTick.bCanEverTick = true;
 	//GetCharacterMovement()->bConstrainToPlane = true;
 	//GetCharacterMovement()->bSnapToPlaneAtStart = true;
 }
 
-void ABaseCharacter::Init(FName NewTableRowName, ETeam NewTeam, ANavBlock* SpawnNavBlock)
+void ABaseCharacter::Init(FName NewTableRowName, ETeam Team, ANavBlock* SpawnNavBlock)
 {
 	TableRowName = NewTableRowName;
-	Team = NewTeam;
-	TargetNavBlock = SpawnNavBlock;
 
+	//NavigationCPT->Init(this, SpawnNavBlock);
 	DetectionCPT->Init(this);
+	CombatCPT->Init(this, Team);
+	MeshFlashCT->RegisterSkeletalMesh(GetMesh());
+
 	if (Team == ETeam::Ally)
 		DetectionCPT->EnableActiveDetection();
 }
@@ -70,14 +74,14 @@ void ABaseCharacter::BeginPlay()
 
 	GInstance = Cast<UBaseGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
 	AnimInstance = Cast<URZAnimInstance>(GetMesh()->GetAnimInstance());
-	AIController = Cast<ABaseAIController>(GetController());
+	AIController = Cast<ACharacterAIController>(GetController());
 
 	FCharacterData* CharacterDataPtr = GInstance->GetCharacterDataFromRow(TableRowName);
 	if (CharacterDataPtr)
 	{
 		CharacterData = *CharacterDataPtr;
-		StatsComponent->Init(CharacterData.MaxHealth, CharacterData.MaxHealth);
-		StatsComponent->OnHealthReachedZero.AddDynamic(this, &ABaseCharacter::Die);
+		StatsCPT->Init(CharacterData.MaxHealth, CharacterData.MaxHealth);
+		StatsCPT->OnHealthReachedZero.AddDynamic(this, &ABaseCharacter::Die);
 		//GetCharacterMovement()->MaxWalkSpeed = CharacterData.DefaultSpeed;
 	}
 
@@ -86,27 +90,16 @@ void ABaseCharacter::BeginPlay()
 
 	SetMeleeWeapon("LaserSword");
 	SetRangedWeapon("LaserRifle");
-
-	//
-	//GetMesh()->OverrideMaterial.Add(GInstance->OutlineMaterial);
-
 }
 
 void ABaseCharacter::BeginDestroy()
 {
-	Super::BeginDestroy(); //After?
-
-
+	Super::BeginDestroy();
 }
 
 void ABaseCharacter::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
-}
-
-void ABaseCharacter::SetTargetNavBlock(ANavBlock* NewTargetNavBlock)
-{
-	TargetNavBlock = NewTargetNavBlock;
 }
 
 void ABaseCharacter::SetRangedWeapon(FName RowName)
@@ -198,13 +191,6 @@ void ABaseCharacter::StopAttacking()
 		RangedWeapon->SetWantsToFire(false);
 	//GEngine->AddOnScreenDebugMessage(4, 1.f, FColor::Purple, FString::Printf(TEXT("CA VEUT PU ATK")));
 }
-void ABaseCharacter::TakeAttack(bool bIsHit, float Damage, bool bIsCritical)
-{
-	if (bIsHit)
-	{
-		StatsComponent->SubtractHealth(Damage);
-	}
-}
 
 void ABaseCharacter::Die(bool bZdead)
 {
@@ -221,7 +207,6 @@ void ABaseCharacter::Die(bool bZdead)
 
 		AIController->Destroy();
 		TopWidgetComponent->DestroyComponent();
-		GroundWidgetComponent->DestroyComponent();
 		SetLifeSpan(10.0f);
 		
 		if (RangedWeapon)
@@ -232,7 +217,7 @@ void ABaseCharacter::Die(bool bZdead)
 		ACombatGameMode* GMode = Cast<ACombatGameMode>(GetWorld()->GetAuthGameMode());
 		if (GMode)
 		{
-			GMode->UnregisterAliveCharacter(this, Team);
+			GMode->UnregisterAliveCharacter(this, CombatCPT->GetTeam());
 		}
 
 		/*if (MeleeWeapon)
@@ -242,20 +227,96 @@ void ABaseCharacter::Die(bool bZdead)
 	}
 }
 
-void ABaseCharacter::OnHoverStart_Implementation()
+#pragma region ///// Interfaces ...
+
+void ABaseCharacter::OnHoverStart()
 {
-	OutlineComponent->ShowOutline();
+	OutlineCT->ShowHoverOutline();
 }
 
-void ABaseCharacter::OnHoverStop_Implementation()
+void ABaseCharacter::OnHoverStop()
 {
-	OutlineComponent->HideOutline();
+	OutlineCT->HideOutline();
 }
 
-void ABaseCharacter::OnLeftClick_Implementation()
+void ABaseCharacter::OnSelectionStart()
 {
+	OutlineCT->ShowSelectionOutline();
 }
 
-void ABaseCharacter::OnRightClick_Implementation()
+void ABaseCharacter::OnSelectionStop()
 {
+	OutlineCT->HideOutline();
 }
+
+ETeam ABaseCharacter::GetTeam()
+{
+	return CombatCPT->GetTeam();
+}
+
+AActor* ABaseCharacter::GetTargetActor()
+{
+	return AIController->GetTargetActor();
+}
+
+ABaseWeapon* ABaseCharacter::GetEquipedWeapon()
+{
+	if (EquipedWeapon == EWeaponSlot::Melee)
+		return MeleeWeapon;
+	else if (EquipedWeapon == EWeaponSlot::Ranged)
+		return RangedWeapon;
+	else
+		return nullptr;
+}
+
+UNavigationComponent* ABaseCharacter::GetNavigationComponent()
+{
+	return NavigationCPT;
+}
+
+UDetectionComponent* ABaseCharacter::GetDetectionComponent()
+{
+	return DetectionCPT;
+}
+
+UCombatComponent* ABaseCharacter::GetCombatComponent()
+{
+	return CombatCPT;
+}
+
+UStatsComponent* ABaseCharacter::GetStatsComponent()
+{
+	return StatsCPT;
+}
+
+UInventoryComponent* ABaseCharacter::GetInventoryComponent()
+{
+	return nullptr;
+}
+
+URZMeshFlashComponent* ABaseCharacter::GetMeshFlashComponent()
+{
+	return MeshFlashCT;
+}
+
+URZOutlineComponent* ABaseCharacter::GetOutlineComponent()
+{
+	return OutlineCT;
+}
+
+void ABaseCharacter::SetWeaponAnimation(EWeaponAnimation WeaponAnimation)
+{
+
+}
+
+void ABaseCharacter::PlayAttackAnimation()
+{
+	AnimInstance->StartAttackAnimation();
+}
+
+void ABaseCharacter::PlayReloadAnimation()
+{
+	AnimInstance->StartReloadAnimation();
+}
+
+#pragma endregion

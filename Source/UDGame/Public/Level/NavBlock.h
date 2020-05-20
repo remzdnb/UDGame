@@ -6,7 +6,7 @@
 #include "NavBlock.generated.h"
 
 UCLASS()
-class UDGAME_API ANavBlock : public AActor, public IInteractionInterface
+class UDGAME_API ANavBlock : public AActor
 {
 	GENERATED_BODY()
 	
@@ -17,9 +17,6 @@ public:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
 
-	FORCEINLINE bool GetIsSpawnEnabled() const { return bIsSpawnEnabled; }
-	FORCEINLINE ETeam GetTeam() const { return Team; }
-
 	bool IsRegistered();
 	void RegisterActor(AActor* ActorToRegister);
 	void UnregisterActor();
@@ -28,25 +25,9 @@ public:
 	FVector GetReferenceLocation();
 	FTransform GetSpawnTransform();
 
-	// Interaction Interface
-
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	void OnHoverStart();
-	virtual void OnHoverStart_Implementation() override;
-
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	void OnHoverStop();
-	virtual void OnHoverStop_Implementation() override;
-
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	void OnLeftClick();
-	virtual void OnLeftClick_Implementation() override;
-
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	void OnRightClick();
-	virtual void OnRightClick_Implementation() override;
-
-	//
+	FORCEINLINE AActor* GetRegisteredActor() const { return RegisteredActor; }
+	FORCEINLINE bool GetIsSpawnEnabled() const { return bIsSpawnEnabled; }
+	FORCEINLINE ETeam GetTeam() const { return Team; }
 
 private:
 

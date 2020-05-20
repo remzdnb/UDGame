@@ -25,7 +25,7 @@ private:
 
 	FTimerHandle ReloadTimerHandle;
 
-	void FireOnce() override;
+	void AttackOnce() override;
 
 	void SpawnProjectile(FTransform SpawnTransform);
 };

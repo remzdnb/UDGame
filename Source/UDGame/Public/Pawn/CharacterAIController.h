@@ -15,9 +15,14 @@ public:
 	virtual void OnPossess(APawn* InPawn) override;
 	virtual void Tick(float DeltaTime) override;
 
+	void MoveToNavBlock(class ANavBlock* InNavBlock);
+
 private:
 
 	UPROPERTY(Transient) class ABaseCharacter* PossessedCharacter;
+	UPROPERTY(Transient) class UNavigationComponent* NavigationCPT;
+
+	bool bWantsToMove;
 
 	void UpdateAllyAI();
 	void UpdateEnemyAI();

@@ -34,7 +34,4 @@ public:
 	FCharacterData* GetCharacterDataFromRow(FName RowName) const;
 	FBuildingData* GetBuildingDataFromRow(FName RowName) const;
 	FWeaponData* GetWeaponDataFromRow(FName RowName) const;
-
-	UPROPERTY(EditAnywhere)
-	class UMaterialInterface* OutlineMaterial;
 };

@@ -15,15 +15,8 @@ class UDGAME_API IInteractionInterface
 
 public:
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	void OnHoverStart();
-
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	void OnHoverStop();
-
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	void OnLeftClick();
-
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	void OnRightClick();
+	virtual void OnHoverStart() = 0;
+	virtual void OnHoverStop() = 0;
+	virtual void OnSelectionStart() = 0;
+	virtual void OnSelectionStop() = 0;
 };

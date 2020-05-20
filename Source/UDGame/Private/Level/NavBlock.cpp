@@ -1,5 +1,9 @@
+// UDGame
 #include "Level/NavBlock.h"
-#include "Level/Cover.h"
+#include "Navigation/Cover.h"
+#include "Pawn/PawnInterface.h"
+#include "Pawn/NavigationComponent.h"
+// Engine
 #include "Components/StaticMeshComponent.h"
 #include "Components/BoxComponent.h"
 #include "Components/ArrowComponent.h"
@@ -43,12 +47,16 @@ void ANavBlock::Tick(float DeltaTime)
 
 	if (RegisteredActor)
 	{
-		if (FVector::Dist(RegisteredActor->GetActorLocation(), DirectionArrow->GetComponentLocation()) < 50.0f)
+		UNavigationComponent* NavigationCPT = Cast<IPawnInterface>(RegisteredActor)->GetNavigationComponent();
+
+		if (FVector::Dist(RegisteredActor->GetActorLocation(), DirectionArrow->GetComponentLocation()) < 100.0f)
 		{
+			NavigationCPT->SetIsInPosition(true);
 			RegisteredActor->SetActorLocation(FMath::Lerp(RegisteredActor->GetActorLocation(), DirectionArrow->GetComponentLocation(), 0.5f));
 		}
+		else
+			NavigationCPT->SetIsInPosition(false);
 	}
-
 }
 
 bool ANavBlock::IsRegistered()
@@ -83,29 +91,3 @@ FTransform ANavBlock::GetSpawnTransform()
 {
 	return DirectionArrow->GetComponentTransform();
 }
-
-// Interaction Interface
-
-void ANavBlock::OnHoverStart_Implementation()
-{
-	for (ACover* Cover : RegisteredCovers)
-		IInteractionInterface::Execute_OnHoverStart(Cover);
-}
-
-void ANavBlock::OnHoverStop_Implementation()
-{
-	for (ACover* Cover : RegisteredCovers)
-		IInteractionInterface::Execute_OnHoverStop(Cover);
-}
-
-void ANavBlock::OnLeftClick_Implementation()
-{
-	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::White, TEXT("left"));
-}
-
-void ANavBlock::OnRightClick_Implementation()
-{
-	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::White, TEXT("right"));
-}
-
-//

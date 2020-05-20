@@ -1,4 +1,4 @@
-#include "Level/Cover.h"
+#include "Navigation/Cover.h"
 #include "Level/NavBlock.h"
 #include "Components/BoxComponent.h"
 #include "Components/ArrowComponent.h"
@@ -61,23 +61,5 @@ void ACover::SelfRegisterToNavBlock()
 			}
 		}
 	}
-}
-
-void ACover::OnHoverStart_Implementation()
-{
-	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::White, TEXT("hov start"));
-}
-
-void ACover::OnHoverStop_Implementation()
-{
-	GEngine->AddOnScreenDebugMessage(-1, 3.0f, FColor::White, TEXT("hov stop"));
-}
-
-void ACover::OnLeftClick_Implementation()
-{
-}
-
-void ACover::OnRightClick_Implementation()
-{
 }
 

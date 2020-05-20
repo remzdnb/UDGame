@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Engine/DataTable.h"
 #include "UDGameTypes.h"
 #include "GameFramework/Actor.h"
 #include "BaseWeapon.generated.h"
@@ -19,13 +18,12 @@ public:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
 
-	virtual void SetWantsToFire(bool bNewWantsToFire);
-
+	void SetWantsToFire(bool bNewWantsToFire);
 	void SetVisibility(bool bNewVisibility);
 
-protected:
+	FORCEINLINE FWeaponData GetWeaponData() const { return WeaponData; }
 
-	virtual void FireOnce();
+protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	class USceneComponent* RootScene;
@@ -36,19 +34,16 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	class USkeletalMeshComponent* BaseSkeletalMesh;
 
-	UPROPERTY()
-	class UBaseGameInstance* GInstance;
+	UPROPERTY(Transient) class UBaseGameInstance* GInstance;
+	
+	class IPawnInterface* OwnerPInterface;
 
-	UPROPERTY()
-	class ABaseCharacter* OwnerCharacter;
-
-	UPROPERTY()
 	FName TableRowName;
-
-	UPROPERTY()
 	FWeaponData WeaponData;
-
 	bool bIsEquiped;
 	bool bWantsToFire;
 	float LastFireTime;
+
+	virtual void AttackOnce();
+	FAttackResult GenerateAttackResult();
 };

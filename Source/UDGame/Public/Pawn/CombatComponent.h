@@ -17,11 +17,17 @@ public:
 	void Init(AActor* InParentActor, ETeam NewTeam);
 
 	virtual void BeginPlay() override;
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
+	FAttackResult GenerateAttackResult(); // static ?
+	void ApplyAttack(FAttackResult AttackResult);
 
 	FORCEINLINE ETeam GetTeam() const { return Team; }
 
 private:
 
+	UPROPERTY(Transient) class UBaseGameInstance* GInstance;
+	UPROPERTY(Transient) AActor* ParentActor;
+
+	class IPawnInterface* PawnInterface;
 	ETeam Team;
 };

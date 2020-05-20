@@ -25,12 +25,11 @@ protected:
 
 private:
 
-	class UBaseGameInstance* GInstance;
-	class ABasePlayerController* OwnerPC;
+	UPROPERTY(Transient) class UBaseGameInstance* GInstance;
+	UPROPERTY(Transient) class ABasePlayerController* OwnerPC;
 
-	UPROPERTY()
-	class USelectedCharacterWidget* SelectedCharacterWidget;
+	UPROPERTY(Transient) class USelectedCharacterWidget* SelectedCharacterWidget;
+	UPROPERTY(Transient) class UCombatGameModeWidget* CombatGameModeWidget;
 
-	UPROPERTY()
-	class UCombatGameModeWidget* CombatGameModeWidget;
+	void CreateWidgets();
 };

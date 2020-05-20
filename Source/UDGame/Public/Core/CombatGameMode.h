@@ -42,8 +42,12 @@ public:
 
 private:
 
+	UPROPERTY(Transient) class ANavManager* NavManager;
+
 	UPROPERTY(Transient) TArray<class ANavBlock*> AllySpawnBlocks;
 	UPROPERTY(Transient) TArray<class ANavBlock*> EnemySpawnBlocks;
+	UPROPERTY(Transient) TArray<class ANavTile*> AllySpawnTiles;
+	UPROPERTY(Transient) TArray<class ANavTile*> EnemySpawnTiles;
 	UPROPERTY(Transient) TArray<class ABaseCharacter*> AliveAllies;
 	UPROPERTY(Transient) TArray<class ABaseCharacter*> AliveEnemies;
 
